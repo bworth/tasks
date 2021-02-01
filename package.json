@@ -1,0 +1,64 @@
+{
+  "name": "tasks",
+  "version": "1.0.0",
+  "description": "Core tasks for development.",
+  "author": "Ben Worthington",
+  "license": "ISC",
+  "keywords": [
+    "front-end",
+    "tasks",
+    "development"
+  ],
+  "scripts": {
+    "build": "gulp build",
+    "clean": "gulp clean",
+    "dev": "gulp dev",
+    "docs": "gulp docs",
+    "inline": "gulp inlineSources",
+    "lint": "gulp lint",
+    "test": "gulp test"
+  },
+  "homepage": "https://github.com/bworth/tasks#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bworth/tasks.git"
+  },
+  "bugs": {
+    "url": "https://github.com/bworth/tasks/issues"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.12.10",
+    "@babel/preset-env": "^7.12.11",
+    "@babel/register": "^7.12.10",
+    "autoprefixer": "^9.0.0",
+    "browser-sync": "^2.26.14",
+    "cssnano": "^4.1.10",
+    "del": "^6.0.0",
+    "gulp": "^4.0.2",
+    "gulp-babel": "^8.0.0",
+    "gulp-concat": "^2.6.1",
+    "gulp-eslint": "^6.0.0",
+    "gulp-filter": "^6.0.0",
+    "gulp-htmlmin": "^5.0.1",
+    "gulp-if": "^3.0.0",
+    "gulp-inline": "^0.1.3",
+    "gulp-jsdoc3": "^3.0.0",
+    "gulp-postcss": "^9.0.0",
+    "gulp-sass": "^4.1.0",
+    "gulp-sourcemaps": "^3.0.0",
+    "gulp-stylelint": "^13.0.0",
+    "gulp-uglify": "^3.0.2",
+    "sassdoc": "^2.7.3",
+    "stylelint": "^13.9.0",
+    "stylelint-config-sass-guidelines": "^7.1.0",
+    "stylelint-config-standard": "^20.0.0"
+  },
+  "babel": {
+    "presets": [
+      "@babel/preset-env"
+    ]
+  },
+  "browserslist": [
+    "defaults"
+  ]
+}
