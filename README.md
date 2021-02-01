@@ -1,3 +1,3 @@
-# tasks
+# Tasks
 
 Core tasks for development.
