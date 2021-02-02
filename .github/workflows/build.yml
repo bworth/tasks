@@ -25,4 +25,5 @@ jobs:
 
       # Runs a single command using the runners shell
       - name: Run the build script
-        run: npm run tasks
+        uses: actions/setup-node@v1
+      - run: npm run tasks
