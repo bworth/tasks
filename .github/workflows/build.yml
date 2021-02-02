@@ -16,8 +16,16 @@ jobs:
     steps:
       # Checks-out the repository under $GITHUB_WORKSPACE
       - uses: actions/checkout@v2
+        with:
+          ref: ${{github.event.pull_request.head.ref}}
       - uses: actions/setup-node@v2
         with:
           node-version: '12'
-      - run: npm install
-      - run: npm run tasks
+      - run: |
+          npm install
+          npm run tasks
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add .
+          git commit -m 'Build tasks'
+          git push
