@@ -176,12 +176,11 @@ function watch(done) {
 	done();
 }
 
-const clean = gulp.parallel(cleanDest, cleanDocs);
-const docs = gulp.parallel(docScripts, docStyles);
+const docs = gulp.series(cleanDocs, gulp.parallel(docScripts, docStyles));
 const lint = gulp.parallel(lintScripts, lintStyles);
 const test = gulp.series(lint);
 
-const build = gulp.series(setEnvProd, clean, test, gulp.parallel(copy, scripts, styles));
-const dev = gulp.series(setEnvDev, cleanDest, lint, gulp.parallel(copy, scripts, styles), serve, watch);
+const build = gulp.series(setEnvProd, cleanDest, test, gulp.parallel(copy, scripts, styles));
+const dev = gulp.series(setEnvDev, gulp.parallel(cleanDest, lint), gulp.parallel(copy, scripts, styles), serve, watch);
 
-export { dev as default, build, clean, dev, docs, inlineSources, lint, test };
+export { dev as default, build, dev, docs, inlineSources, lint, test };
