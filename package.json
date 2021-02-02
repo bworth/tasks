@@ -11,12 +11,12 @@
   ],
   "scripts": {
     "build": "gulp build",
-    "clean": "gulp clean",
     "dev": "gulp dev",
     "docs": "gulp docs",
     "inline": "gulp inlineSources",
     "lint": "gulp lint",
     "start": "gulp",
+    "tasks": "gulp tasks",
     "test": "gulp test"
   },
   "homepage": "https://github.com/bworth/tasks#readme",
