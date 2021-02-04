@@ -16,7 +16,7 @@
     "inline": "gulp inlineSources",
     "lint": "gulp lint",
     "start": "gulp",
-    "tasks": "gulp tasks",
+    "tasks": "gulp buildTasks",
     "test": "gulp test"
   },
   "homepage": "https://github.com/bworth/tasks#readme",
