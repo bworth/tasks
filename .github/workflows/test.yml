@@ -1,27 +1,25 @@
-name: Build
+name: Test
 
 on:
   push:
     branches:
       - main
+  pull_request:
+    branches:
+      - main
   workflow_dispatch:
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-        with:
-          ref: ${{github.event.pull_request.head.ref}}
 
-      - name: Install, build and commit
+      - name: Install and test
         uses: actions/setup-node@v2
         with:
           node-version: '12'
       - run: |
           npm ci
-          npm run tasks
-          git add .
-          git commit -m 'Build tasks'
-          git push
+          npm test
