@@ -30,7 +30,7 @@ var _gulpFilter = _interopRequireDefault(require("gulp-filter"));
 
 var _gulpHtmlmin = _interopRequireDefault(require("gulp-htmlmin"));
 
-var _gulpInline = _interopRequireDefault(require("gulp-inline"));
+var _gulpInlineSource = _interopRequireDefault(require("gulp-inline-source"));
 
 var _gulpJsdoc = _interopRequireDefault(require("gulp-jsdoc3"));
 
@@ -111,9 +111,15 @@ function copy() {
   }))).pipe(filterMarkup.restore).pipe(_gulp["default"].dest(paths.dest));
 }
 
+function deleteInlinedSource(source) {
+  _del["default"].sync(paths.dest + source.sourcepath);
+}
+
 function inlineSources() {
-  return _gulp["default"].src(paths.dest + 'index.html').pipe((0, _gulpInline["default"])({
-    base: paths.dest
+  return _gulp["default"].src(paths.dest + '**/*.html').pipe((0, _gulpInlineSource["default"])({
+    compress: false,
+    handlers: [deleteInlinedSource],
+    pretty: true
   })).pipe(_gulp["default"].dest(paths.dest));
 }
 
