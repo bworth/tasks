@@ -11,7 +11,7 @@ import concat from 'gulp-concat';
 import eslint from 'gulp-eslint';
 import filter from 'gulp-filter';
 import htmlmin from 'gulp-htmlmin';
-import inline from 'gulp-inline';
+import inlinesource from 'gulp-inline-source';
 import jsdoc from 'gulp-jsdoc3';
 import postcss from 'gulp-postcss';
 import sass from 'gulp-sass';
@@ -82,9 +82,13 @@ function copy() {
 		.pipe(gulp.dest(paths.dest));
 }
 
+function deleteInlinedSource(source) {
+	del.sync(paths.dest + source.sourcepath);
+}
+
 function inlineSources() {
-	return gulp.src(paths.dest + 'index.html')
-		.pipe(inline({ base: paths.dest }))
+	return gulp.src(paths.dest + '**/*.html')
+		.pipe(inlinesource({ compress: false, handlers: [deleteInlinedSource], pretty: true }))
 		.pipe(gulp.dest(paths.dest));
 }
 
