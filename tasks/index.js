@@ -52,7 +52,7 @@ const paths = {
 	maps: '.sourcemaps/',
 	public: 'public/**/*',
 	scripts: {
-		all: ['gulpfile.babel.js', 'src/**/*.js'],
+		all: ['gulpfile.babel.js', 'public/**/*.js', 'src/**/*.js'],
 		doc: 'docs/scripts/',
 		src: 'src/**/*.js',
 	},
