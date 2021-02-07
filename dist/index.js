@@ -3,7 +3,6 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.inlineSources = inlineSources;
 exports.test = exports.lint = exports.docs = exports.build = exports.dev = exports["default"] = void 0;
 
 var _autoprefixer = _interopRequireDefault(require("autoprefixer"));
@@ -75,11 +74,11 @@ var jsdocConfig = {
   }
 };
 var paths = {
-  dest: 'build/',
+  dist: 'build/',
   maps: '.sourcemaps/',
   "public": 'public/**/*',
   scripts: {
-    all: ['gulpfile.babel.js', 'src/**/*.js'],
+    all: ['gulpfile.babel.js', 'public/**/*.js', 'src/**/*.js'],
     doc: 'docs/scripts/',
     src: 'src/**/*.js'
   },
@@ -91,15 +90,15 @@ var paths = {
 
 var server = _browserSync["default"].create();
 
-function cleanDest() {
-  return (0, _del["default"])(paths.dest);
+function cleanDist() {
+  return (0, _del["default"])(paths.dist);
 }
 
 function cleanDocs() {
   return (0, _del["default"])([paths.scripts.doc, paths.styles.doc]);
 }
 
-function copy() {
+function copyPublic() {
   var filterMarkup = (0, _gulpFilter["default"])('**/*.html', {
     restore: true
   });
@@ -108,29 +107,28 @@ function copy() {
     dot: true
   }).pipe(filterMarkup).pipe((0, _gulpIf["default"])(isProduction, (0, _gulpHtmlmin["default"])({
     collapseWhitespace: true
-  }))).pipe(filterMarkup.restore).pipe(_gulp["default"].dest(paths.dest));
+  }))).pipe(filterMarkup.restore).pipe(_gulp["default"].dest(paths.dist));
 }
 
 function deleteInlinedSource(source) {
-  _del["default"].sync(paths.dest + source.sourcepath);
+  _del["default"].sync(paths.dist + source.sourcepath);
 }
 
 function inlineSources() {
-  return _gulp["default"].src(paths.dest + '**/*.html').pipe((0, _gulpInlineSource["default"])({
+  return _gulp["default"].src(paths.dist + '**/*.html').pipe((0, _gulpInlineSource["default"])({
     compress: false,
-    handlers: [deleteInlinedSource],
-    pretty: true
-  })).pipe(_gulp["default"].dest(paths.dest));
+    handlers: [deleteInlinedSource]
+  })).pipe(_gulp["default"].dest(paths.dist));
 }
 
 function scripts() {
   var isProduction = process.env.NODE_ENV === 'production';
-  return _gulp["default"].src(paths.scripts.src).pipe((0, _gulpIf["default"])(!isProduction, _gulpSourcemaps["default"].init())).pipe((0, _gulpBabel["default"])()).pipe((0, _gulpConcat["default"])('main.js')).pipe((0, _gulpIf["default"])(isProduction, (0, _gulpUglify["default"])())).pipe((0, _gulpIf["default"])(!isProduction, _gulpSourcemaps["default"].write(paths.maps))).pipe(_gulp["default"].dest(paths.dest));
+  return _gulp["default"].src(paths.scripts.src).pipe((0, _gulpIf["default"])(!isProduction, _gulpSourcemaps["default"].init())).pipe((0, _gulpBabel["default"])()).pipe((0, _gulpConcat["default"])('main.js')).pipe((0, _gulpIf["default"])(isProduction, (0, _gulpUglify["default"])())).pipe((0, _gulpIf["default"])(!isProduction, _gulpSourcemaps["default"].write(paths.maps))).pipe(_gulp["default"].dest(paths.dist));
 }
 
 function styles() {
   var isProduction = process.env.NODE_ENV === 'production';
-  return _gulp["default"].src(paths.styles.src).pipe((0, _gulpIf["default"])(!isProduction, _gulpSourcemaps["default"].init())).pipe((0, _gulpSass["default"])().on('error', _gulpSass["default"].logError)).pipe((0, _gulpConcat["default"])('main.css')).pipe((0, _gulpIf["default"])(isProduction, (0, _gulpPostcss["default"])([(0, _autoprefixer["default"])(), (0, _cssnano["default"])()]), (0, _gulpPostcss["default"])([(0, _autoprefixer["default"])()]))).pipe((0, _gulpIf["default"])(!isProduction, _gulpSourcemaps["default"].write(paths.maps))).pipe(_gulp["default"].dest(paths.dest));
+  return _gulp["default"].src(paths.styles.src).pipe((0, _gulpIf["default"])(!isProduction, _gulpSourcemaps["default"].init())).pipe((0, _gulpSass["default"])().on('error', _gulpSass["default"].logError)).pipe((0, _gulpConcat["default"])('main.css')).pipe((0, _gulpIf["default"])(isProduction, (0, _gulpPostcss["default"])([(0, _autoprefixer["default"])(), (0, _cssnano["default"])()]), (0, _gulpPostcss["default"])([(0, _autoprefixer["default"])()]))).pipe((0, _gulpIf["default"])(!isProduction, _gulpSourcemaps["default"].write(paths.maps))).pipe(_gulp["default"].dest(paths.dist));
 }
 
 function docScripts(done) {
@@ -164,7 +162,7 @@ function lintStyles() {
 function serve(done) {
   server.init({
     server: {
-      baseDir: paths.dest
+      baseDir: paths.dist
     }
   });
   done();
@@ -186,7 +184,7 @@ function setEnvProd(done) {
 }
 
 function watch(done) {
-  _gulp["default"].watch(paths["public"], _gulp["default"].series(copy, reload));
+  _gulp["default"].watch(paths["public"], _gulp["default"].series(copyPublic, reload));
 
   _gulp["default"].watch(paths.scripts.src, _gulp["default"].series(_gulp["default"].parallel(lintScripts, scripts), reload));
 
@@ -194,6 +192,8 @@ function watch(done) {
 
   done();
 }
+
+var buildDist = _gulp["default"].parallel(copyPublic, scripts, styles);
 
 var docs = _gulp["default"].series(cleanDocs, _gulp["default"].parallel(docScripts, docStyles));
 
@@ -207,10 +207,10 @@ var test = _gulp["default"].series(lint);
 
 exports.test = test;
 
-var build = _gulp["default"].series(setEnvProd, cleanDest, test, _gulp["default"].parallel(copy, scripts, styles));
+var build = _gulp["default"].series(setEnvProd, cleanDist, test, buildDist, inlineSources);
 
 exports.build = build;
 
-var dev = _gulp["default"].series(setEnvDev, _gulp["default"].parallel(cleanDest, lint), _gulp["default"].parallel(copy, scripts, styles), serve, watch);
+var dev = _gulp["default"].series(setEnvDev, _gulp["default"].parallel(cleanDist, lint), buildDist, serve, watch);
 
 exports.dev = exports["default"] = dev;
