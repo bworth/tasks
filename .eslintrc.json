@@ -7,10 +7,8 @@
     }
   },
   "env": {
-    "browser": true,
     "node": true,
-    "es2020": true,
-    "serviceworker": true
+    "es2020": true
   },
   "rules": {
     "indent": ["error", "tab"]

@@ -48,11 +48,11 @@ const jsdocConfig = {
 	},
 };
 const paths = {
-	dest: 'build/',
+	dist: 'build/',
 	maps: '.sourcemaps/',
 	public: 'public/**/*',
 	scripts: {
-		all: ['gulpfile.babel.js', 'src/**/*.js'],
+		all: ['gulpfile.babel.js', 'public/**/*.js', 'src/**/*.js'],
 		doc: 'docs/scripts/',
 		src: 'src/**/*.js',
 	},
@@ -63,15 +63,15 @@ const paths = {
 };
 const server = browserSync.create();
 
-function cleanDest() {
-	return del(paths.dest);
+function cleanDist() {
+	return del(paths.dist);
 }
 
 function cleanDocs() {
 	return del([paths.scripts.doc, paths.styles.doc]);
 }
 
-function copy() {
+function copyPublic() {
 	const filterMarkup = filter('**/*.html', { restore: true });
 	const isProduction = process.env.NODE_ENV === 'production';
 
@@ -79,17 +79,17 @@ function copy() {
 		.pipe(filterMarkup)
 		.pipe(gulpif(isProduction, htmlmin({ collapseWhitespace: true })))
 		.pipe(filterMarkup.restore)
-		.pipe(gulp.dest(paths.dest));
+		.pipe(gulp.dest(paths.dist));
 }
 
 function deleteInlinedSource(source) {
-	del.sync(paths.dest + source.sourcepath);
+	del.sync(paths.dist + source.sourcepath);
 }
 
 function inlineSources() {
-	return gulp.src(paths.dest + '**/*.html')
-		.pipe(inlinesource({ compress: false, handlers: [deleteInlinedSource], pretty: true }))
-		.pipe(gulp.dest(paths.dest));
+	return gulp.src(paths.dist + '**/*.html')
+		.pipe(inlinesource({ compress: false, handlers: [deleteInlinedSource] }))
+		.pipe(gulp.dest(paths.dist));
 }
 
 function scripts() {
@@ -101,7 +101,7 @@ function scripts() {
 		.pipe(concat('main.js'))
 		.pipe(gulpif(isProduction, uglify()))
 		.pipe(gulpif(!isProduction, sourcemaps.write(paths.maps)))
-		.pipe(gulp.dest(paths.dest));
+		.pipe(gulp.dest(paths.dist));
 }
 
 function styles() {
@@ -115,7 +115,7 @@ function styles() {
 			postcss([autoprefixer(), cssnano()]),
 			postcss([autoprefixer()])))
 		.pipe(gulpif(!isProduction, sourcemaps.write(paths.maps)))
-		.pipe(gulp.dest(paths.dest));
+		.pipe(gulp.dest(paths.dist));
 }
 
 function docScripts(done) {
@@ -152,7 +152,7 @@ function lintStyles() {
 function serve(done) {
 	server.init({
 		server: {
-			baseDir: paths.dest,
+			baseDir: paths.dist,
 		},
 	});
 	done();
@@ -174,17 +174,18 @@ function setEnvProd(done) {
 }
 
 function watch(done) {
-	gulp.watch(paths.public, gulp.series(copy, reload));
+	gulp.watch(paths.public, gulp.series(copyPublic, reload));
 	gulp.watch(paths.scripts.src, gulp.series(gulp.parallel(lintScripts, scripts), reload));
 	gulp.watch(paths.styles.src, gulp.series(gulp.parallel(lintStyles, styles), reload));
 	done();
 }
 
+const buildDist = gulp.parallel(copyPublic, scripts, styles);
 const docs = gulp.series(cleanDocs, gulp.parallel(docScripts, docStyles));
 const lint = gulp.parallel(lintScripts, lintStyles);
 const test = gulp.series(lint);
 
-const build = gulp.series(setEnvProd, cleanDest, test, gulp.parallel(copy, scripts, styles));
-const dev = gulp.series(setEnvDev, gulp.parallel(cleanDest, lint), gulp.parallel(copy, scripts, styles), serve, watch);
+const build = gulp.series(setEnvProd, cleanDist, test, buildDist, inlineSources);
+const dev = gulp.series(setEnvDev, gulp.parallel(cleanDist, lint), buildDist, serve, watch);
 
-export { dev as default, build, dev, docs, inlineSources, lint, test };
+export { dev as default, build, dev, docs, lint, test };
