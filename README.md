@@ -3,7 +3,7 @@
 [![Build status](https://github.com/bworth/tasks/workflows/Build%20status/badge.svg?branch=main&event=push)](https://github.com/bworth/tasks/actions?query=workflow%3A%22Build+status%22+branch%3Amain)
 [![LICENSE](https://img.shields.io/github/license/bworth/tasks?color=lightgrey)](https://github.com/bworth/tasks/blob/main/LICENSE)
 
-Core [gulp](https://gulpjs.com/) tasks for the development of small projects.
+Core [gulp](https://gulpjs.com/) tasks for small project development.
 
 ## Main features
 
@@ -16,9 +16,9 @@ Core [gulp](https://gulpjs.com/) tasks for the development of small projects.
 ### `build`
 
 - Lints JS and Sass, fails after error
-- Copies public files into the 'dist' folder along with compiled scripts and styles
+- Copies public files into the specified 'dist' folder along with compiled scripts and styles
 - Minifies HTML, JS and CSS
-- Any HTML source files referenced by `<link>` or `<script>` tags with an `inline` attribute are inserted inline into the markup
+- Any source files in the HTML referenced by `<link>` or `<script>` tags with an `inline` attribute are inserted inline into the markup
 
 ### `dev`
 
